@@ -4,7 +4,7 @@ class ExceptionNodo extends Exception {
     }
 }
 
-public class NodoB <E extends Comparable<E>> {
+public class NodoB <E extends Comparable<E>> implements Comparable<NodoB<E>>{
     protected E llave;
     protected NodoB<E> hijoIzq;
     protected NodoB<E> hijoDer;
@@ -13,6 +13,10 @@ public class NodoB <E extends Comparable<E>> {
     public NodoB(E llave) {
         super();
         this.llave = llave;
+    }
+
+    public NodoB() {
+
     }
     public NodoB(E llave, NodoB<E> hijoIzq, NodoB<E> hijoDer) {
         super();
@@ -56,5 +60,10 @@ public class NodoB <E extends Comparable<E>> {
                 hijoDer.insertarAbb(valor);
             }
         }
+    }
+
+    @Override
+    public int compareTo(NodoB<E> o) {
+        return llave.compareTo(o.getLlave());
     }
 }

@@ -1,20 +1,37 @@
 import java.io.File;
-import java.util.PriorityQueue;
+import java.util.*;
 
 public class Compresor<E extends Comparable<E>> {
-    PriorityQueue<Dato<E>> listaDatos;
+    File archivo;
     ArbolH<E> huffman;
 
-    public PriorityQueue<E> crearLista(File file) {
+    public ArrayList<E> crearLista(File archivo) {
+        return new ArrayList<E>();
+    }
+
+    public ArrayList<E> genDatos(File archivo) {
+        ArrayList<E> info = crearLista(archivo);
         return null;
     }
 
-    public void getDatos() {
-
+    public void buildTree(File archivo) {
+        ArrayList<E> info = genDatos(archivo);
+        PriorityQueue<NodoB> nodos = new PriorityQueue<>();
+        for (int i = 0; i < info.size(); i++) {
+            nodos.add(new NodoB(info.get(i)));
+        }
+        while(nodos.size() > 1) {
+            NodoB temp = new NodoB();
+            temp.setHijoIzq(nodos.poll());
+            temp.setHijoDer(nodos.poll());
+            nodos.add(temp);
+        }
+        huffman.setRaiz(nodos.poll());
     }
 
-    public void buildTree() {
-
+    public void cargar(File archivo) {
+        this.archivo = archivo;
+        buildTree(archivo);
     }
 
     public void comprimir() {
