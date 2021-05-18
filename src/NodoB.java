@@ -5,9 +5,11 @@ class ExceptionNodo extends Exception {
 }
 
 public class NodoB <E extends Comparable<E>> implements Comparable<NodoB<E>>{
-    protected E llave;
-    protected NodoB<E> hijoIzq;
-    protected NodoB<E> hijoDer;
+    private E llave;
+    private NodoB<E> hijoIzq;
+    private NodoB<E> hijoDer;
+    //IMPORTANTE
+    private int weight;
 
 
     public NodoB(E llave) {
@@ -16,31 +18,49 @@ public class NodoB <E extends Comparable<E>> implements Comparable<NodoB<E>>{
     }
 
     public NodoB() {
-
     }
+
+    public NodoB(E llave, int weight) {
+        this.llave = llave;
+        this.weight = weight;
+    }
+
     public NodoB(E llave, NodoB<E> hijoIzq, NodoB<E> hijoDer) {
         super();
         this.llave = llave;
         this.hijoIzq = hijoIzq;
         this.hijoDer = hijoDer;
     }
+
     public E getLlave() {
         return llave;
     }
+
     public void setLlave(E llave) {
         this.llave = llave;
     }
+
     public NodoB<E> getHijoIzq() {
         return hijoIzq;
     }
+
     public void setHijoIzq(NodoB<E> hijoIzq) {
         this.hijoIzq = hijoIzq;
     }
+
     public NodoB<E> getHijoDer() {
         return hijoDer;
     }
+
     public void setHijoDer(NodoB<E> hijoDer) {
         this.hijoDer = hijoDer;
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+    public void setWeight(int weight) {
+        this.weight = weight;
     }
 
     public void insertarAbb(E valor) throws ExceptionNodo {
@@ -64,6 +84,6 @@ public class NodoB <E extends Comparable<E>> implements Comparable<NodoB<E>>{
 
     @Override
     public int compareTo(NodoB<E> o) {
-        return llave.compareTo(o.getLlave());
+        return weight - o.getWeight();
     }
 }
