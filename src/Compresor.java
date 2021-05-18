@@ -30,7 +30,7 @@ public class Compresor<E extends Comparable<E>> {
             for (int i = 0; i < aux.size(); i++) {
                 int acum=1;
                 int n=i+1;
-                while(aux.get(i).compareTo(aux.get(n))==0) {
+                while(aux.get(i).compareTo(aux.get(n++))==0) {
                     i++;
                     acum++;
                 }
