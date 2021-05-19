@@ -25,6 +25,10 @@ public class NodoB <E extends Comparable<E>> implements Comparable<NodoB<E>>{
         this.weight = weight;
     }
 
+    public NodoB(int weight) {
+        this.weight = weight;
+    }
+
     public NodoB(E llave, NodoB<E> hijoIzq, NodoB<E> hijoDer) {
         super();
         this.llave = llave;

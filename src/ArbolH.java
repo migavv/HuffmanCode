@@ -13,5 +13,4 @@ public class ArbolH <E extends Comparable<E>> {
         this.raiz = raiz;
     }
 
-    public void
 }

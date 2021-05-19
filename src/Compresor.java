@@ -1,7 +1,4 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 public class Compresor<E extends Comparable<E>> {
@@ -9,16 +6,21 @@ public class Compresor<E extends Comparable<E>> {
     ArbolH<Character> huffman;
     HashMap<Character, String> codigos;
 
+    public Compresor() {
+        this.codigos = new HashMap<>();
+    }
 
     public ArrayList<Character> leerFichero(File archivo) throws ClassNotFoundException, IOException, FileNotFoundException {
         FileReader fr;
+        BufferedReader br;
         ArrayList<Character> aux = new ArrayList<Character>();
         int caract;
         fr = new FileReader(archivo);
-        caract = fr.read();
+        br = new BufferedReader(fr);
+        caract = br.read();
         while(caract != -1) {
-            aux.add((char) fr.read());
-            caract = fr.read();
+            aux.add((char)caract);
+            caract = br.read();
         }
         Collections.sort(aux);
         fr.close();
@@ -26,30 +28,37 @@ public class Compresor<E extends Comparable<E>> {
     }
 
     public ArrayList<NodoB<Character>> genDatos(File archivo) throws IOException, ClassNotFoundException {
-            ArrayList<Character> aux = leerFichero(archivo);
-            ArrayList<NodoB<Character>> lista = new ArrayList<NodoB<Character>>();
-            for (int i = 0; i < aux.size(); i++) {
-                int acum=1;
-                int n=i+1;
-                while(aux.get(i).compareTo(aux.get(n++))==0) {
-                    i++;
-                    acum++;
-                }
-                lista.add(new NodoB<Character>(aux.get(i), acum));
+        ArrayList<Character> aux = leerFichero(archivo);
+        ArrayList<NodoB<Character>> lista = new ArrayList<NodoB<Character>>();
+        char temp = aux.get(0);
+        int cont = 1;
+        for (int i = 1; i < aux.size(); i++) {
+            if(i + 1 == aux.size() || aux.get(i) != temp) {
+                lista.add(new NodoB<Character>(temp, cont));
+                cont = 1;
+                temp = aux.get(i);
             }
-            return lista;
+            else
+                cont++;
+        }
+        if(temp != lista.get(lista.size() - 1).getLlave()) {
+            lista.add(new NodoB<Character>(temp, 1));
+        }
+        return lista;
     }
 
     public void buildTree(File archivo) throws IOException, ClassNotFoundException {
         PriorityQueue<NodoB> nodos = new PriorityQueue<>();
-        nodos.addAll(genDatos(archivo));
+        ArrayList<NodoB<Character>> datos = genDatos(archivo);
+        nodos.addAll(datos);
         while(nodos.size() > 1) {
             NodoB temp = new NodoB();
             temp.setHijoIzq(nodos.poll());
             temp.setHijoDer(nodos.poll());
+            temp.setWeight(temp.getHijoIzq().getWeight() + temp.getHijoDer().getWeight());
             nodos.add(temp);
         }
-        huffman.setRaiz(nodos.poll());
+        huffman = new ArbolH<>(nodos.poll());
     }
 
     public void mapCodigos(NodoB<Character> nodo, String codigo) {
@@ -60,6 +69,7 @@ public class Compresor<E extends Comparable<E>> {
             mapCodigos(nodo.getHijoIzq(), codigo + '0');
             mapCodigos(nodo.getHijoDer(), codigo + '1');
         }
+        return;
     }
 
     public void cargar(File archivo) throws IOException, ClassNotFoundException {
@@ -70,12 +80,16 @@ public class Compresor<E extends Comparable<E>> {
 
     public void comprimir() throws IOException {
         FileReader fr;
+        BufferedReader br;
         StringBuilder aux = new StringBuilder();
         int caract;
         fr = new FileReader(archivo);
-        caract = fr.read();
+        br = new BufferedReader(fr);
+        caract = br.read();
         while(caract != -1) {
-            aux.append(codigos.get((char)caract));
+            String cod = codigos.get((char)caract);
+            aux.append(cod);
+            caract = br.read();
         }
         System.out.println(aux.toString());
         fr.close();
@@ -83,6 +97,18 @@ public class Compresor<E extends Comparable<E>> {
 
     public void descomprimir() {
 
+    }
+
+    public static void main(String[] args) {
+        Compresor<Character> compresor = new Compresor<>();
+        try {
+            compresor.cargar(new File("D:\\prueba.txt"));
+            compresor.comprimir();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
 }
