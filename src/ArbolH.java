@@ -12,4 +12,6 @@ public class ArbolH <E extends Comparable<E>> {
     public ArbolH(NodoB<E> raiz) {
         this.raiz = raiz;
     }
+
+    public void
 }

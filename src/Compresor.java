@@ -6,7 +6,8 @@ import java.util.*;
 
 public class Compresor<E extends Comparable<E>> {
     File archivo;
-    ArbolH<E> huffman;
+    ArbolH<Character> huffman;
+    HashMap<Character, String> codigos;
 
 
     public ArrayList<Character> leerFichero(File archivo) throws ClassNotFoundException, IOException, FileNotFoundException {
@@ -51,13 +52,33 @@ public class Compresor<E extends Comparable<E>> {
         huffman.setRaiz(nodos.poll());
     }
 
+    public void mapCodigos(NodoB<Character> nodo, String codigo) {
+        if (nodo != null) {
+            if(nodo.getHijoIzq() == null && nodo.getHijoDer() == null) {
+                codigos.put(nodo.getLlave(), codigo);
+            }
+            mapCodigos(nodo.getHijoIzq(), codigo + '0');
+            mapCodigos(nodo.getHijoDer(), codigo + '1');
+        }
+    }
+
     public void cargar(File archivo) throws IOException, ClassNotFoundException {
         this.archivo = archivo;
         buildTree(archivo);
+        mapCodigos(huffman.getRaiz(), "");
     }
 
-    public void comprimir() {
-
+    public void comprimir() throws IOException {
+        FileReader fr;
+        StringBuilder aux = new StringBuilder();
+        int caract;
+        fr = new FileReader(archivo);
+        caract = fr.read();
+        while(caract != -1) {
+            aux.append(codigos.get((char)caract));
+        }
+        System.out.println(aux.toString());
+        fr.close();
     }
 
     public void descomprimir() {
