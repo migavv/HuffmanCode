@@ -1,4 +1,5 @@
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class Compresor<E extends Comparable<E>> {
@@ -97,18 +98,23 @@ public class Compresor<E extends Comparable<E>> {
             caract = br.read();
         }
         fr.close();
+        System.out.println(aux);
         return aux.toString();
     }
 
     public void comprimir() throws IOException {
         String codigo = codificar();
         String [] split = codigo.split("(?<=\\G.{8})");
-        byte[] bytes = new byte[split.length];
-        for (int i = 0; i < bytes.length; i++) {
-            bytes[i] = Byte.parseByte(split[i], 2);
+        char[] chars = new char[split.length];
+        for (int i = 0; i < chars.length; i++) {
+            chars[i] = (char)Integer.parseInt(split[i], 2);
         }
-        FileOutputStream fos = new FileOutputStream(new File(outDir));
-        fos.write(bytes);
+        System.out.println(new String(chars)); //Linea de prueba
+        FileWriter writer = new FileWriter(outDir);
+        writer.write(chars);
+        writer.close();
+        //FileOutputStream fos = new FileOutputStream(new File(outDir));
+        //fos.write(res.getBytes(StandardCharsets.UTF_8));
     }
 
     public void descomprimir() {
