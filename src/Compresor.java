@@ -5,9 +5,14 @@ public class Compresor<E extends Comparable<E>> {
     File archivo;
     ArbolH<Character> huffman;
     HashMap<Character, String> codigos;
+    String outDir;
 
     public Compresor() {
         this.codigos = new HashMap<>();
+    }
+
+    public void setOutDir(String outDir) {
+        this.outDir = outDir;
     }
 
     public ArrayList<Character> leerFichero(File archivo) throws ClassNotFoundException, IOException, FileNotFoundException {
@@ -78,7 +83,7 @@ public class Compresor<E extends Comparable<E>> {
         mapCodigos(huffman.getRaiz(), "");
     }
 
-    public void comprimir() throws IOException {
+    public String codificar() throws IOException {
         FileReader fr;
         BufferedReader br;
         StringBuilder aux = new StringBuilder();
@@ -91,8 +96,19 @@ public class Compresor<E extends Comparable<E>> {
             aux.append(cod);
             caract = br.read();
         }
-        System.out.println(aux.toString());
         fr.close();
+        return aux.toString();
+    }
+
+    public void comprimir() throws IOException {
+        String codigo = codificar();
+        String [] split = codigo.split("(?<=\\G.{8})");
+        byte[] bytes = new byte[split.length];
+        for (int i = 0; i < bytes.length; i++) {
+            bytes[i] = Byte.parseByte(split[i], 2);
+        }
+        FileOutputStream fos = new FileOutputStream(new File(outDir));
+        fos.write(bytes);
     }
 
     public void descomprimir() {
@@ -102,6 +118,7 @@ public class Compresor<E extends Comparable<E>> {
     public static void main(String[] args) {
         Compresor<Character> compresor = new Compresor<>();
         try {
+            compresor.setOutDir("D:\\prueba2.txt");
             compresor.cargar(new File("D:\\prueba.txt"));
             compresor.comprimir();
         } catch (IOException e) {
