@@ -56,6 +56,7 @@ public class Compresor<E extends Comparable<E>> {
 
     public void buildTree(File archivo) throws IOException, ClassNotFoundException {
         PriorityQueue<NodoB> nodos = new PriorityQueue<>();
+        nodos.add(new NodoB<Character>((char)3, 1));
         ArrayList<NodoB<Character>> datos = genDatos(archivo);
         nodos.addAll(datos);
         while(nodos.size() > 1) {
@@ -85,6 +86,10 @@ public class Compresor<E extends Comparable<E>> {
         mapCodigos(huffman.getRaiz(), "");
     }
 
+    public void cargarDescomprimir(File archivo) {
+        this.archivo = archivo;
+    }
+
     public String codificar() throws IOException {
         FileReader fr;
         BufferedReader br;
@@ -98,6 +103,7 @@ public class Compresor<E extends Comparable<E>> {
             aux.append(cod);
             caract = br.read();
         }
+        aux.append((char)3);
         fr.close();
         System.out.println(aux);
         return aux.toString();
@@ -106,6 +112,9 @@ public class Compresor<E extends Comparable<E>> {
     public void comprimir() throws IOException {
         String codigo = codificar();
         String [] split = codigo.split("(?<=\\G.{8})");
+        while (split[split.length - 1].length() < 8) {
+            split[split.length - 1] += '0';
+        }
         char[] chars = new char[split.length];
         for (int i = 0; i < chars.length; i++) {
             chars[i] = (char)Integer.parseInt(split[i], 2);
@@ -122,7 +131,22 @@ public class Compresor<E extends Comparable<E>> {
         bWriter.close();
     }
 
-
+    public String fileToBin () throws IOException {
+        FileReader fr = new FileReader(archivo);
+        BufferedReader br = new BufferedReader(fr);
+        StringBuilder res = new StringBuilder();
+        int caract = br.read();
+        while(caract != -1) {
+            String temp = Integer.toBinaryString(caract);
+            while(temp.length() < 8) {
+                temp = '0' + temp;
+            }
+            res.append(temp);
+            caract = br.read();
+        }
+        br.close();
+        return res.toString();
+    }
 
     public String decodificar(String codigo) throws IOException {
         StringBuilder res = new StringBuilder();
@@ -134,11 +158,22 @@ public class Compresor<E extends Comparable<E>> {
                 temp = temp.getHijoDer();
 
             if(temp.getHijoIzq() == null && temp.getHijoDer() == null) {
+                if (temp.getLlave() == (char)3) {
+                    break;
+                }
                 res.append(temp.getLlave());
                 temp = huffman.getRaiz();
             }
         }
         return res.toString();
+    }
+
+    public void descomprimir() throws IOException {
+        String res = decodificar(fileToBin());
+        FileWriter fw = new FileWriter(outDir);
+        BufferedWriter bw = new BufferedWriter(fw);
+        bw.write(res);
+        bw.close();
     }
 
     public static void main(String[] args) {
@@ -147,6 +182,11 @@ public class Compresor<E extends Comparable<E>> {
             compresor.setOutDir("D:\\prueba2.txt");
             compresor.cargarComprimir(new File("D:\\prueba.txt"));
             compresor.comprimir();
+
+            compresor.setOutDir("D:\\descomprimido.txt");
+            compresor.cargarDescomprimir(new File("D:\\prueba2.txt"));
+            compresor.descomprimir();
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
