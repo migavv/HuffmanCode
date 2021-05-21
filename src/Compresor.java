@@ -50,6 +50,7 @@ public class Compresor<E extends Comparable<E>> {
         if(temp != lista.get(lista.size() - 1).getLlave()) {
             lista.add(new NodoB<Character>(temp, 1));
         }
+        //A;adir nodo extra
         return lista;
     }
 
@@ -78,7 +79,7 @@ public class Compresor<E extends Comparable<E>> {
         return;
     }
 
-    public void cargar(File archivo) throws IOException, ClassNotFoundException {
+    public void cargarComprimir(File archivo) throws IOException, ClassNotFoundException {
         this.archivo = archivo;
         buildTree(archivo);
         mapCodigos(huffman.getRaiz(), "");
@@ -111,21 +112,40 @@ public class Compresor<E extends Comparable<E>> {
         }
         System.out.println(new String(chars)); //Linea de prueba
         FileWriter writer = new FileWriter(outDir);
-        writer.write(chars);
-        writer.close();
-        //FileOutputStream fos = new FileOutputStream(new File(outDir));
-        //fos.write(res.getBytes(StandardCharsets.UTF_8));
+        BufferedWriter bWriter = new BufferedWriter(writer);
+        //for (int i = 0; i < frecuencias.size(); i++) {
+            //bWriter.write(String.valueOf(frecuencias.get(i).getLlave()));
+            //bWriter.write(String.valueOf(frecuencias.get(i).getWeight()));
+            //bWriter.newLine();
+        //}
+        bWriter.write(chars);
+        bWriter.close();
     }
 
-    public void descomprimir() {
 
+
+    public String decodificar(String codigo) throws IOException {
+        StringBuilder res = new StringBuilder();
+        NodoB<Character> temp = huffman.getRaiz();
+        for (int i = 0; i < codigo.length(); i++) {
+            if(codigo.charAt(i) == '0')
+                temp = temp.getHijoIzq();
+            else
+                temp = temp.getHijoDer();
+
+            if(temp.getHijoIzq() == null && temp.getHijoDer() == null) {
+                res.append(temp.getLlave());
+                temp = huffman.getRaiz();
+            }
+        }
+        return res.toString();
     }
 
     public static void main(String[] args) {
         Compresor<Character> compresor = new Compresor<>();
         try {
             compresor.setOutDir("D:\\prueba2.txt");
-            compresor.cargar(new File("D:\\prueba.txt"));
+            compresor.cargarComprimir(new File("D:\\prueba.txt"));
             compresor.comprimir();
         } catch (IOException e) {
             e.printStackTrace();
