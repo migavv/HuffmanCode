@@ -159,7 +159,7 @@ public class Compresor<E extends Comparable<E>> {
 
             if(temp.getHijoIzq() == null && temp.getHijoDer() == null) {
                 if (temp.getLlave() == (char)3) {
-                    break; //Borrar
+                    break; //Cambiar ciclo por while y borrar break
                 }
                 res.append(temp.getLlave());
                 temp = huffman.getRaiz();
