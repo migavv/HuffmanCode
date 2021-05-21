@@ -103,7 +103,7 @@ public class Compresor<E extends Comparable<E>> {
             aux.append(cod);
             caract = br.read();
         }
-        aux.append((char)3);
+        aux.append(codigos.get((char)3));
         fr.close();
         System.out.println(aux);
         return aux.toString();
@@ -159,7 +159,7 @@ public class Compresor<E extends Comparable<E>> {
 
             if(temp.getHijoIzq() == null && temp.getHijoDer() == null) {
                 if (temp.getLlave() == (char)3) {
-                    break;
+                    break; //Borrar
                 }
                 res.append(temp.getLlave());
                 temp = huffman.getRaiz();
