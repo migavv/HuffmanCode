@@ -179,6 +179,8 @@ public class Compresor<E extends Comparable<E>> {
 
     public String treeToString(NodoB<Character> nodo, String codigo) {
         if (nodo != null) {
+            codigo = treeToString(nodo.getHijoIzq(), codigo);
+            codigo = treeToString(nodo.getHijoDer(), codigo);
             if(nodo.getHijoIzq() == null && nodo.getHijoDer() == null) {
                 String aux = Integer.toBinaryString(nodo.getLlave());
                 while(aux.length() < 8) {
@@ -186,10 +188,8 @@ public class Compresor<E extends Comparable<E>> {
                 }
                 codigo += '1' + aux;
             }
-            else {
-                codigo = treeToString(nodo.getHijoIzq(), codigo + '0');
-                codigo = treeToString(nodo.getHijoDer(), codigo + '0');
-            }
+            else
+                codigo += '0';
         }
         return codigo;
     }
@@ -243,10 +243,11 @@ public class Compresor<E extends Comparable<E>> {
         StringBuilder tree = new StringBuilder();
         int n = 0;
         int i = 0;
-        while(n < nCaracteres) {
+        while(n < nCaracteres - 1) {
             if(codigo.charAt(i) == '0') {
                 tree.append(0);
                 i++;
+                n++;
             }
             else {
                 tree.append(1);
@@ -254,7 +255,6 @@ public class Compresor<E extends Comparable<E>> {
                 char caract = (char)Integer.parseInt(temp, 2);
                 tree.append(caract);
                 i += 9;
-                n++;
             }
         }
         return tree.toString();
@@ -263,42 +263,33 @@ public class Compresor<E extends Comparable<E>> {
     public void treeFromFile(File archivo) throws IOException {
         String codigo = decodeTree(archivo);
         Stack<NodoB<Character>> stack = new Stack<>();
-        NodoB<Character> root = new NodoB<>();
         for (int i = 0; i < codigo.length(); i++) {
-            if(codigo.charAt(i) == 0) {
-                NodoB<Character> aux = new NodoB<>();
-                if(root.getHijoIzq() != null)
-                    root.setHijoDer(aux);
-                else
-                    root.setHijoIzq(aux);
-                stack.add(root);
-                root = aux;
+            if(codigo.charAt(i) == '1') {
+                Character caract = codigo.charAt(++i);
+                stack.add(new NodoB<Character>(caract));
             }
+
             else {
-                NodoB<Character> aux = new NodoB<>(codigo.charAt(++i));
-                if(root.getHijoIzq() != null)
-                    root.setHijoDer(aux);
-                else
-                    root.setHijoIzq(aux);
-                root = stack.pop();
+                NodoB<Character> aux = new NodoB<>();
+                aux.setHijoDer(stack.pop());
+                aux.setHijoIzq(stack.pop());
+                stack.add(aux);
             }
         }
-
+        huffman = new ArbolH<>(stack.pop());
     }
 
 
     public static void main(String[] args) {
         Compresor<Character> compresor = new Compresor<>();
         try {
+            compresor.treeFromFile(new File("D:\\huffman.tree"));
             compresor.setOutDir("D:\\prueba.zap");
             compresor.cargarComprimir(new File("D:\\prueba.txt"));
             compresor.writeTree("D:\\");
             System.out.println(compresor.treeToString());
             System.out.println(compresor.decodeTree(new File("D:\\huffman.tree")));
             compresor.comprimir();
-
-
-
             compresor.setOutDir("D:\\descomprimido.txt");
             compresor.cargarDescomprimir(new File("D:\\prueba.zap"));
             compresor.descomprimir();
