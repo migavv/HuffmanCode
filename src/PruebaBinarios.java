@@ -9,7 +9,11 @@ public class PruebaBinarios {
         int i = 3;
         c = (char)3;
         System.out.println(c);
-        File file = new File("D:\\prueba2.txt");
+        //File file = new File("D:\\prueba2.txt");
         byte b = Byte.parseByte("10011", 2);
+
+        String p = "Miguel";
+        String u = p.substring(1, 6);
+        System.out.println(u);
     }
 }
