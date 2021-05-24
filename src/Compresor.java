@@ -6,6 +6,7 @@ public class Compresor<E extends Comparable<E>> {
     File archivo;
     ArbolH<Character> huffman;
     int nCaracteres;
+    int treeSize;
     HashMap<Character, String> codigos;
     String outDir;
 
@@ -123,19 +124,17 @@ public class Compresor<E extends Comparable<E>> {
         System.out.println(new String(chars)); //Linea de prueba
         FileWriter writer = new FileWriter(outDir);
         BufferedWriter bWriter = new BufferedWriter(writer);
-        //for (int i = 0; i < frecuencias.size(); i++) {
-            //bWriter.write(String.valueOf(frecuencias.get(i).getLlave()));
-            //bWriter.write(String.valueOf(frecuencias.get(i).getWeight()));
-            //bWriter.newLine();
-        //}
+        writeTree(outDir, bWriter);
         bWriter.write(chars);
         bWriter.close();
+        writer.close();
     }
 
     public String fileToBin () throws IOException {
         FileReader fr = new FileReader(archivo);
         BufferedReader br = new BufferedReader(fr);
         StringBuilder res = new StringBuilder();
+        treeFromFile(br);
         int caract = br.read();
         while(caract != -1) {
             String temp = Integer.toBinaryString(caract);
@@ -208,38 +207,39 @@ public class Compresor<E extends Comparable<E>> {
         for (int i = 0; i < bytes.length; i++) {
             chars[i] = (char)Integer.parseInt(bytes[i], 2);
         }
+        treeSize = chars.length;
         return chars;
     }
 
-    public void writeTree(String dir) throws IOException {
+    public void writeTree(String dir, BufferedWriter writer) throws IOException {
         char[] tree = treeToBinary();
-        FileWriter fw = new FileWriter(dir + "huffman.tree");
-        BufferedWriter writer = new BufferedWriter(fw);
+        System.out.println(tree);
         writer.write(codigos.size());
+        writer.write(treeSize);
         writer.write(tree);
-        writer.close();
-        fw.close();
     }
 
-    public String readTree(File archivo) throws IOException {
-        FileReader fr = new FileReader(archivo);
-        BufferedReader reader = new BufferedReader(fr);
+    public String readTree(BufferedReader reader) throws IOException {
         StringBuilder tree = new StringBuilder();
+        int c = 0;
         nCaracteres = reader.read();
+        treeSize = reader.read();
         int caract = reader.read();
-        while(caract != -1) {
+        while(c <=  treeSize) {
             String temp = Integer.toBinaryString(caract);
             while(temp.length() < 8) {
                 temp = '0' + temp;
             }
             tree.append(temp);
-            caract = reader.read();
+            c++;
+            if(c < treeSize)
+                caract = reader.read();
         }
         return tree.toString();
     }
 
-    public String decodeTree(File archivo) throws IOException {
-        String codigo = readTree(archivo);
+    public String decodeTree(BufferedReader reader) throws IOException {
+        String codigo = readTree(reader);
         StringBuilder tree = new StringBuilder();
         int n = 0;
         int i = 0;
@@ -260,15 +260,14 @@ public class Compresor<E extends Comparable<E>> {
         return tree.toString();
     }
 
-    public void treeFromFile(File archivo) throws IOException {
-        String codigo = decodeTree(archivo);
+    public void treeFromFile(BufferedReader reader) throws IOException {
+        String codigo = decodeTree(reader);
         Stack<NodoB<Character>> stack = new Stack<>();
         for (int i = 0; i < codigo.length(); i++) {
             if(codigo.charAt(i) == '1') {
                 Character caract = codigo.charAt(++i);
                 stack.add(new NodoB<Character>(caract));
             }
-
             else {
                 NodoB<Character> aux = new NodoB<>();
                 aux.setHijoDer(stack.pop());
@@ -283,13 +282,12 @@ public class Compresor<E extends Comparable<E>> {
     public static void main(String[] args) {
         Compresor<Character> compresor = new Compresor<>();
         try {
-            compresor.treeFromFile(new File("D:\\huffman.tree"));
             compresor.setOutDir("D:\\prueba.zap");
             compresor.cargarComprimir(new File("D:\\prueba.txt"));
-            compresor.writeTree("D:\\");
             System.out.println(compresor.treeToString());
-            System.out.println(compresor.decodeTree(new File("D:\\huffman.tree")));
             compresor.comprimir();
+
+
             compresor.setOutDir("D:\\descomprimido.txt");
             compresor.cargarDescomprimir(new File("D:\\prueba.zap"));
             compresor.descomprimir();
