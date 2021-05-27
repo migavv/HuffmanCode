@@ -11,6 +11,9 @@ public class PruebaBinarios {
     public static void main(String[] args) {
         char c = '1';
         int i = 3;
+        System.out.println((char)Integer.parseInt("1000000000000", 2));
+        System.out.println('“');
+        System.out.println(Integer.toBinaryString('"'));
         c = (char)3;
         System.out.println(c);
         File file = new File("D:\\prueba2.txt");
