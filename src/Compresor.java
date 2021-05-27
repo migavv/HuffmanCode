@@ -135,7 +135,7 @@ public class Compresor {
         FileReader fr = new FileReader(archivo);
         BufferedReader br = new BufferedReader(fr);
         StringBuilder res = new StringBuilder();
-        readTree(br);
+        treeFromFile(br);
         int caract = br.read();
         while(caract != -1) {
             String temp = Integer.toBinaryString(caract);
@@ -195,12 +195,12 @@ public class Compresor {
         return codigo;
     }
 
-    public StringBuilder treeToString() {
-        return treeToString(huffman.getRaiz(), new StringBuilder());
+    public String treeToString() {
+        return treeToString(huffman.getRaiz(), new StringBuilder()).toString();
     }
 
     public char[] treeToBinary() {
-        String tree = treeToString().toString();
+        String tree = treeToString();
         String[] bytes = tree.split("(?<=\\G.{8})");
         while(bytes[bytes.length - 1].length() < 8) {
             bytes[bytes.length - 1] += '0';
@@ -234,30 +234,8 @@ public class Compresor {
         return tree.toString();
     }
 
-    public String decodeTree(BufferedReader reader) throws IOException {
-        String codigo = readTree(reader);
-        StringBuilder tree = new StringBuilder();
-        int n = 0;
-        int i = 0;
-        while(n < nCaracteres - 1) {
-            if(codigo.charAt(i) == '0') {
-                tree.append(0);
-                i++;
-                n++;
-            }
-            else {
-                tree.append(1);
-                String temp = codigo.substring(i + 1, i + 9);
-                char caract = (char)Integer.parseInt(temp, 2);
-                tree.append(caract);
-                i += 9;
-            }
-        }
-        return tree.toString();
-    }
-
-    public void treeFromFile(BufferedReader reader) throws IOException {
-        String codigo = decodeTree(reader);
+    public void treeFromFile(BufferedReader br) throws IOException {
+        String codigo = readTree(br);
         Stack<NodoB<Character>> stack = new Stack<>();
         int i = 0;
         while (i < codigo.length()) {
@@ -288,10 +266,10 @@ public class Compresor {
     public static void main(String[] args) {
         Compresor compresor = new Compresor();
         try {
-            compresor.setOutDir("D:\\prueba.zap");
-            compresor.cargarComprimir(new File("D:\\prueba.txt"));
-            System.out.println(compresor.treeToString());
-            compresor.comprimir();
+            //compresor.setOutDir("D:\\prueba.zap");
+            //compresor.cargarComprimir(new File("D:\\prueba.txt"));
+            //System.out.println(compresor.treeToString());
+            //compresor.comprimir();
 
 
             compresor.setOutDir("D:\\descomprimido.txt");
@@ -300,11 +278,6 @@ public class Compresor {
 
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         }
     }
-
-
-
 }
