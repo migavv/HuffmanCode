@@ -1,4 +1,4 @@
-# HuffmanCode# Compresor Huffman en Java
+# Compresor Huffman en Java
 
 Este proyecto implementa un programa de compresión basado en el algoritmo de Huffman en Java. El programa permite comprimir y descomprimir archivos utilizando una estructura de árbol de Huffman para la codificación y decodificación.
 
